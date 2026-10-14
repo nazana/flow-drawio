@@ -1,5 +1,5 @@
 const {app,BrowserWindow,dialog}=require('electron');
-const {mkdirSync}=require('node:fs');
+const {mkdirSync,appendFileSync}=require('node:fs');
 const {join,dirname}=require('node:path');
 
 let window,server;
@@ -38,6 +38,7 @@ app.whenReady().then(async()=>{
   window.on('closed',()=>{window=null;});
   await window.loadURL(url);
 }).catch(error=>{
+  try{appendFileSync(join(dataDir,'startup-error.log'),`${new Date().toISOString()}\n${error.stack||error}\n`);}catch{}
   dialog.showErrorBox('Flow Studio 실행 오류',`앱을 시작하지 못했습니다. 실행 폴더의 쓰기 권한을 확인하세요.\n\n${error.message}`);
   app.quit();
 });

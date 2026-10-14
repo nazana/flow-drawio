@@ -2,7 +2,7 @@ Windows x64용 Electron 포터블 앱입니다. Project On처럼 EXE를 더블�
 
 ## 사용
 
-1. `Flow-Studio-0.2.0-Windows-x64-Portable.exe`를 쓰기 가능한 폴더에 다운로드합니다.
+1. `Flow-Studio-0.2.1-Windows-x64-Portable.exe`를 쓰기 가능한 폴더에 다운로드합니다.
 2. EXE를 더블클릭합니다. 최초 실행은 내부 파일 압축 해제로 시간이 걸릴 수 있습니다.
 3. 데이터는 **EXE 옆 `.data` 폴더**에 저장됩니다. EXE와 `.data`를 함께 옮기면 작업을 이어갈 수 있습니다.
 
