@@ -84,3 +84,27 @@ test('live trust boundaries: password limits, XML validation, origin, throttling
     await assert.rejects(live.handler(request(path,'POST',{password:'password999'},true),response()),rejectsStatus(429));
   }finally{live.close();}
 });
+
+test('collaboration merges independent concurrent edits and retries once, scoped to the shared room',async()=>{
+  const live=createLiveHandler(),base={title:'공동 문서',xml:sampleXml(),pageId:'main'};
+  try{
+    const created=response();await live.handler(request('/api/live','POST',{...base,password:'collab-password',editable:true}),created);
+    const path='/api/live/'+JSON.parse(created.chunks.join('')).token;
+    await assert.rejects(live.handler(request(path+'/edit','POST',{},true),response()),rejectsStatus(401));
+    const joined=response();await live.handler(request(path+'/join','POST',{password:'collab-password'},true),joined);
+    assert.equal(JSON.parse(joined.chunks.join('')).editable,true);
+    const cookie=joined.headers['Set-Cookie'].split(';')[0];
+    const ownerState={...base,title:'함께 작업',xml:base.xml.replace('label="생산계획 수립"','label="계획 A"')};
+    const peerState={...base,xml:base.xml.replace('label="생산계획 수신"','label="자재 B"')};
+    const owner=response();await live.handler(request(path+'/edit?owner=1','POST',{operationId:'owner-1',base,state:ownerState}),owner);
+    const peer=response();await live.handler(request(path+'/edit','POST',{operationId:'peer-1',base,state:peerState},true,cookie),peer);
+    const merged=JSON.parse(peer.chunks.join(''));assert.equal(merged.revision,2);assert.equal(merged.title,'함께 작업');assert.ok(merged.xml.includes('계획 A'));assert.ok(merged.xml.includes('자재 B'));
+    const retry=response();await live.handler(request(path+'/edit','POST',{operationId:'peer-1',base,state:peerState},true,cookie),retry);assert.equal(JSON.parse(retry.chunks.join('')).revision,2);
+    await assert.rejects(live.handler(request(path+'/edit?owner=1','POST',{operationId:'spoof',base,state:peerState},true,cookie),response()),rejectsStatus(403));
+    await assert.rejects(live.handler(request(path,'DELETE',{},true,cookie),response()),rejectsStatus(403));
+    const viewRoom=response();await live.handler(request('/api/live','POST',{...base,password:'collab-password'}),viewRoom);
+    const viewPath='/api/live/'+JSON.parse(viewRoom.chunks.join('')).token;
+    const viewJoin=response();await live.handler(request(viewPath+'/join','POST',{password:'collab-password'},true),viewJoin);
+    await assert.rejects(live.handler(request(viewPath+'/edit','POST',{operationId:'blocked',base,state:peerState},true,viewJoin.headers['Set-Cookie'].split(';')[0]),response()),rejectsStatus(403));
+  }finally{live.close();}
+});

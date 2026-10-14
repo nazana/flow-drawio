@@ -1,4 +1,5 @@
 import {nativeStyleKeys,defaultStyles,validateStyles,validateElements,styleValues,patchStyle,followsStyle,legendLabel} from './flow-styles.js';
+import {mergeXml} from './flow-merge.js';
 /* Flow integration for pinned draw.io 31.4.6. No changes to the editor engine. */
 App.initPluginCallback();
 App.embedModePluginsCount++;
@@ -206,10 +207,12 @@ Draw.loadPlugin(function(ui) {
       source: cell.source && cell.source.id, target: cell.target && cell.target.id,
       systemCode: attribute(cell, 'systemCode'), ifId: attribute(cell, 'ifId'), detail: attribute(cell, 'detail')};
   }
+  let collabBase=null,collabSession=null;
   function snapshot(requestId) {
     try {
       synchronizePalettes();
-      send({event: 'flow:snapshot', requestId, xml: ui.getFileData(true), catalog: catalog(), styles:styles(), showSystems: showSystems(),
+      send({event: 'flow:snapshot', requestId, xml: ui.getXmlForPages?ui.getXmlForPages(ui.pages):ui.getFileData(true), catalog: catalog(), styles:styles(), showSystems: showSystems(),
+        collabChanged:collabBase!=null&&!mxUtils.isEmptyObject(ui.diffPages(ui.getPagesForXml(collabBase),ui.pages)),
         conflicts:Object.values(model.cells||{}).filter(c=>c.edge).map(connectionConflict).filter(Boolean),
         pages:(ui.pages||[]).filter(page=>page.getId).map(page=>({id:page.getId(),name:page.getName?.()||'페이지'})),
         pageId: ui.currentPage ? ui.currentPage.getId() : '',
@@ -292,6 +295,18 @@ Draw.loadPlugin(function(ui) {
     try { message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data; } catch { return; }
     if (!message || !String(message.action || '').startsWith('flow:')) return;
     try {
+      if(message.action==='flow:collabBegin'){collabSession=message.sessionId;collabBase=null;return;}
+      if(message.action==='flow:collabApply'){
+        if(message.sessionId!==collabSession)throw new Error('공동편집 연결이 종료되었습니다.');
+        if(graph.isEditing()||graph.isMouseDown){setTimeout(()=>window.dispatchEvent(new MessageEvent('message',{source:window.parent,origin,data:message})),100);return;}
+        const local=ui.getXmlForPages(ui.pages);
+        const merged=mergeXml(message.baseXml,local,message.xml,DOMParser,XMLSerializer);
+        const patch=ui.diffPages(ui.getPagesForXml(local),ui.getPagesForXml(merged));
+        collabBase=message.xml;
+        ui.getCurrentFile().patch([patch],null,false,false);
+        snapshot(message.requestId);return;
+      }
+      if(message.action==='flow:collabStop'){if(message.sessionId===collabSession){collabBase=null;collabSession=null;if(message.freeze)graph.setEnabled(false);}return;}
       if(message.action==='flow:readonly'){
         graph.setEnabled(false);
         if(!document.getElementById('flow-viewer-style')){

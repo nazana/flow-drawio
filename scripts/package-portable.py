@@ -39,6 +39,7 @@ def package(target):
         shutil.copy2(ROOT / "src/model.ts", app / "src/model.ts")
         (app / "public").mkdir()
         shutil.copy2(ROOT / "public/flow-styles.js", app / "public/flow-styles.js")
+        shutil.copy2(ROOT / "public/flow-merge.js", app / "public/flow-merge.js")
         shutil.copy2(ROOT / "package.json", app / "package.json")
         shutil.copytree(ROOT / "node_modules/@xmldom/xmldom", app / "node_modules/@xmldom/xmldom")
         runtime = app / "runtime"
