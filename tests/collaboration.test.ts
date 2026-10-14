@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {DOMParser,XMLSerializer} from '@xmldom/xmldom';
+import {DOMParser,XMLSerializer,type Element} from '@xmldom/xmldom';
 import {mergeXml} from '../public/flow-merge.js';
 const base='<mxfile><diagram id="p"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="a" value="A" vertex="1" parent="1"><mxGeometry x="10" y="20" width="80" height="40" as="geometry"/></mxCell><mxCell id="b" value="B" vertex="1" parent="1"><mxGeometry x="30" y="40" width="80" height="40" as="geometry"/></mxCell></root></mxGraphModel></diagram></mxfile>';
 const merge=(before:string,edited:string,current:string)=>mergeXml(before,edited,current,DOMParser,XMLSerializer);
