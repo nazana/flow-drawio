@@ -1,8 +1,14 @@
 # Flow Studio
 
-## 포터블 다운로드
+## Windows Electron 앱
 
-[GitHub 릴리스](https://github.com/nazana/flow-drawio/releases/latest)에서 운영체제별 ZIP을 받으세요. Node.js 설치나 npm 설치 없이 실행할 수 있습니다. [포터블 실행 안내](docs/portable.md).
+[최신 릴리스](https://github.com/nazana/flow-drawio/releases/latest)의 Windows 포터블 EXE를 더블클릭하면 앱 창이 열립니다. 데이터는 EXE 옆 `.data`에 저장됩니다. [실행·업데이트 안내](docs/electron-release.md).
+
+Windows에서 `npm ci` 후 `npm run electron:portable`로 빌드할 수 있습니다. 개발 실행은 `npm run electron:start`입니다.
+
+## 기존 브라우저 포터블 다운로드
+
+[GitHub 릴리스](https://github.com/nazana/flow-drawio/releases/tag/v0.1.0)에서 운영체제별 ZIP을 받으세요. Node.js 설치나 npm 설치 없이 실행할 수 있습니다. [포터블 실행 안내](docs/portable.md).
 
 소스에서 포터블 패키지를 만들려면 `npm ci`, `npm test`, `npm run build` 후 `python3 scripts/package-portable.py`를 실행합니다. 공식 Node.js 런타임 다운로드에 인터넷이 필요하며 SHA256을 검증합니다. 결과는 `releases/`에 생성됩니다. 특정 플랫폼만 만들려면 `python3 scripts/package-portable.py win-x64`처럼 지정하세요.
 

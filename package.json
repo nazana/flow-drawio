@@ -1,13 +1,16 @@
 {
   "name": "flow-drawio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "start": "node --experimental-strip-types server/index.ts",
-    "test": "node --experimental-strip-types --test tests/*.test.ts"
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "backend:bundle": "esbuild server/index.ts --bundle --platform=node --format=cjs --outfile=server-dist/index.cjs",
+    "electron:portable": "npm run build && npm run backend:bundle && electron-builder --win portable --x64 --publish never",
+    "electron:start": "npm run build && npm run backend:bundle && electron ."
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.0",
@@ -20,9 +23,47 @@
     "@types/node": "^25.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "electron": "44.7.2",
+    "electron-builder": "26.15.3",
+    "esbuild": "0.28.2",
     "typescript": "^5.9.0"
   },
   "engines": {
     "node": ">=22.13.0"
+  },
+  "main": "electron/main.cjs",
+  "description": "Offline system and interface diagram editor",
+  "author": "nazana",
+  "build": {
+    "appId": "com.nazana.flow-studio",
+    "productName": "Flow Studio",
+    "directories": {
+      "output": "releases"
+    },
+    "artifactName": "Flow-Studio-${version}-Windows-${arch}-Portable.${ext}",
+    "compression": "maximum",
+    "asar": true,
+    "files": [
+      "electron/main.cjs",
+      "server-dist/index.cjs",
+      "package.json",
+      "!node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "dist",
+        "to": "dist"
+      }
+    ],
+    "electronLanguages": [
+      "en-US",
+      "ko"
+    ],
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        "portable"
+      ]
+    }
   }
 }

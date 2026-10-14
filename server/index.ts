@@ -2,7 +2,7 @@ import {createServer} from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
 import {extname,join,resolve,sep} from 'node:path';
 import {createApiHandler} from './api.ts';
-const root=resolve('dist'),api=createApiHandler();
+const root=resolve(process.env.FLOW_STATIC_PATH??'dist'),api=createApiHandler();
 const types:Record<string,string>={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.gif':'image/gif','.woff':'font/woff','.woff2':'font/woff2','.ttf':'font/ttf','.ico':'image/x-icon','.xml':'application/xml','.txt':'text/plain','.wasm':'application/wasm'};
 const csp="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'";
 const server=createServer((req,res)=>{
@@ -19,5 +19,10 @@ const server=createServer((req,res)=>{
     res.end(req.method==='HEAD'?undefined:await readFile(file));
   }catch{res.statusCode=404;res.end('Not found');}})();
 });
-server.on('close',api.close);server.on('error',error=>{console.error(error.message);process.exitCode=1;});
-server.listen(Number(process.env.PORT??5180),process.env.HOST??'127.0.0.1',()=>console.log(`Flow Studio: http://${process.env.HOST??'127.0.0.1'}:${process.env.PORT??5180}`));
+server.on('close',api.close);
+export {server};
+export const serverReady=new Promise<string>((ready,reject)=>{
+  server.once('error',reject);
+  server.listen(Number(process.env.PORT??5180),process.env.HOST??'127.0.0.1',()=>ready(`http://${process.env.HOST??'127.0.0.1'}:${(server.address() as {port:number}).port}`));
+});
+serverReady.then(url=>console.log(`Flow Studio: ${url}`)).catch(error=>{console.error(error.message);process.exitCode=1;});
