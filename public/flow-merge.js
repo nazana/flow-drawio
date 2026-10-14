@@ -53,7 +53,12 @@ export function mergeXml(base, edited, current, Parser, Serializer) {
       let prior = null; const ordered = index(target);
       for (const key of changed.keys()) {
         const node = ordered.get(key);
-        if (node) { target.insertBefore(node, prior ? prior.nextSibling : target.firstChild); prior = node; }
+        if (node) {
+          const anchor = prior ? prior.nextSibling : target.firstChild;
+          // xmldom cannot insert a node before itself; an already placed node stays put.
+          if (node !== anchor) target.insertBefore(node, anchor);
+          prior = node;
+        }
       }
     }
   }

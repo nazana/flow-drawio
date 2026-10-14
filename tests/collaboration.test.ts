@@ -23,3 +23,10 @@ test('deletion wins, new dangling edges are disconnected, invalid roots and pare
  assert.throws(()=>merge(base,base.replace('id="a" value="A" vertex="1" parent="1"','id="a" value="A" vertex="1" parent="a"'),base),/순환/);
  assert.throws(()=>merge(base,'<!DOCTYPE mxfile>'+base,base));
 });
+test('changing shape stacking order preserves the unchanged prefix and concurrent labels',()=>{
+ const reordered=base.replace(/(<mxCell id="a"[\s\S]*?<\/mxCell>)(<mxCell id="b"[\s\S]*?<\/mxCell>)/,'$2$1');
+ const combined=merge(base,reordered,base.replace('value="A"','value="Other editor"'));
+ const ids=Array.from(new DOMParser().parseFromString(combined,'text/xml').getElementsByTagName('root')[0].childNodes).filter(node=>node.nodeType===1).map(node=>(node as Element).getAttribute('id'));
+ assert.deepEqual(ids,['0','1','b','a']);assert.equal(cell(combined,'a').getAttribute('value'),'Other editor');
+ assert.deepEqual(Array.from(new DOMParser().parseFromString(merge(base,reordered,combined),'text/xml').getElementsByTagName('mxCell')).map(node=>node.getAttribute('id')),ids);
+});

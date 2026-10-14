@@ -1,8 +1,10 @@
 Windows x64용 Electron 포터블 앱입니다. 같은 사내망에서 직접 정한 공유 비밀번호로 보기 전용 또는 공동편집 공유를 시작하고, 링크와 비밀번호를 각각 복사할 수 있습니다. [공유 사용 안내](https://github.com/nazana/flow-drawio/blob/main/docs/live-sharing.md). Project On처럼 EXE를 더블클릭하면 Flow Studio 앱 창이 열립니다. 설치·Node.js·별도 브라우저가 필요 없습니다.
 
+도형의 앞뒤 순서 변경 중 공동편집 전송이 멈추던 오류를 수정했습니다.
+
 ## 사용
 
-1. `Flow-Studio-0.4.0-Windows-x64-Portable.exe`를 쓰기 가능한 폴더에 다운로드합니다.
+1. `Flow-Studio-0.4.1-Windows-x64-Portable.exe`를 쓰기 가능한 폴더에 다운로드합니다.
 2. EXE를 더블클릭합니다. 최초 실행은 내부 파일 압축 해제로 시간이 걸릴 수 있습니다.
 3. 데이터는 **EXE 옆 `.data` 폴더**에 저장됩니다. EXE와 `.data`를 함께 옮기면 작업을 이어갈 수 있습니다.
 
