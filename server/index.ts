@@ -23,6 +23,6 @@ server.on('close',api.close);
 export {server};
 export const serverReady=new Promise<string>((ready,reject)=>{
   server.once('error',reject);
-  server.listen(Number(process.env.PORT??5180),process.env.HOST??'127.0.0.1',()=>ready(`http://${process.env.HOST??'127.0.0.1'}:${(server.address() as {port:number}).port}`));
+  server.listen(Number(process.env.PORT??5180),process.env.HOST??'0.0.0.0',()=>ready(`http://127.0.0.1:${(server.address() as {port:number}).port}`));
 });
 serverReady.then(url=>console.log(`Flow Studio: ${url}`)).catch(error=>{console.error(error.message);process.exitCode=1;});

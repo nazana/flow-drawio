@@ -14,14 +14,14 @@ try{
 if(!locked)app.quit();
 app.on('second-instance',()=>{if(window){if(window.isMinimized())window.restore();window.focus();}});
 app.on('window-all-closed',()=>app.quit());
-app.on('will-quit',()=>server?.close());
+app.on('will-quit',()=>{server?.closeAllConnections();server?.close();});
 
 app.whenReady().then(async()=>{
   if(!locked)return;
   mkdirSync(dataDir,{recursive:true});
   process.env.FLOW_DB_PATH=join(dataDir,'flow.sqlite');
   process.env.FLOW_STATIC_PATH=app.isPackaged?join(process.resourcesPath,'dist'):join(__dirname,'..','dist');
-  process.env.HOST='127.0.0.1';
+  process.env.HOST='0.0.0.0';
   process.env.PORT='0';
   const backend=require('../server-dist/index.cjs');
   server=backend.server;

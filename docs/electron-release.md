@@ -1,8 +1,8 @@
-Windows x64용 Electron 포터블 앱입니다. Project On처럼 EXE를 더블클릭하면 Flow Studio 앱 창이 열립니다. 설치·Node.js·별도 브라우저가 필요 없습니다.
+Windows x64용 Electron 포터블 앱입니다. 같은 사내망에서 직접 정한 공유 비밀번호로 실시간 보기 전용 공유를 시작하고, 링크와 비밀번호를 각각 복사할 수 있습니다. [공유 사용 안내](https://github.com/nazana/flow-drawio/blob/main/docs/live-sharing.md). Project On처럼 EXE를 더블클릭하면 Flow Studio 앱 창이 열립니다. 설치·Node.js·별도 브라우저가 필요 없습니다.
 
 ## 사용
 
-1. `Flow-Studio-0.2.1-Windows-x64-Portable.exe`를 쓰기 가능한 폴더에 다운로드합니다.
+1. `Flow-Studio-0.3.0-Windows-x64-Portable.exe`를 쓰기 가능한 폴더에 다운로드합니다.
 2. EXE를 더블클릭합니다. 최초 실행은 내부 파일 압축 해제로 시간이 걸릴 수 있습니다.
 3. 데이터는 **EXE 옆 `.data` 폴더**에 저장됩니다. EXE와 `.data`를 함께 옮기면 작업을 이어갈 수 있습니다.
 
@@ -12,4 +12,4 @@ Windows x64용 Electron 포터블 앱입니다. Project On처럼 EXE를 더블�
 
 기존 테스트, 프로덕션 빌드, Windows 빌드 서버에서 실제 포터블 EXE 실행·화면 로드·편집기 초기화·문서 저장·버전 이력·재실행 후 문서 보존을 확인한 뒤 게시합니다. 개인 문서 DB는 배포에 포함하지 않습니다.
 
-Windows 10/11 x64용입니다. 코드 서명이 없으므로 SmartScreen 경고가 표시될 수 있습니다. SHA256SUMS-electron.txt로 파일 무결성을 확인할 수 있습니다. 로그인·권한·실시간 공동편집은 지원하지 않습니다.
+Windows 10/11 x64용입니다. 코드 서명이 없으므로 SmartScreen 경고가 표시될 수 있습니다. SHA256SUMS-electron.txt로 파일 무결성을 확인할 수 있습니다. 사용자별 로그인과 실시간 공동편집은 지원하지 않습니다. 보기 권한은 공유 비밀번호로 제한합니다. 같은 사내망 HTTP 공유이며 네트워크 암호화는 제공하지 않습니다.

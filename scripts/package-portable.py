@@ -48,7 +48,7 @@ def package(target):
             with zipfile.ZipFile(archive) as source:
                 for member in ("node.exe", "LICENSE"):
                     (runtime / member).write_bytes(source.read(prefix + member))
-            (app / "start.bat").write_bytes(b'@echo off\r\ncd /d "%~dp0"\r\nset HOST=127.0.0.1\r\nset FLOW_DB_PATH=.data/flow.sqlite\r\necho Open http://127.0.0.1:5180 in your browser. Keep this window open.\r\nruntime\\node.exe --experimental-strip-types server\\index.ts\r\npause\r\n')
+            (app / "start.bat").write_bytes(b'@echo off\r\ncd /d "%~dp0"\r\nset HOST=0.0.0.0\r\nset FLOW_DB_PATH=.data/flow.sqlite\r\necho Open http://127.0.0.1:5180 in your browser. Keep this window open.\r\nruntime\\node.exe --experimental-strip-types server\\index.ts\r\npause\r\n')
         else:
             with tarfile.open(archive) as source:
                 for member, destination in (("bin/node", "node"), ("LICENSE", "LICENSE")):
@@ -56,7 +56,7 @@ def package(target):
                         (runtime / destination).write_bytes(stream.read())
             (runtime / "node").chmod(0o755)
             launcher = app / ("start.command" if target.startswith("darwin") else "start.sh")
-            launcher.write_text('#!/bin/sh\nset -eu\ncd "$(dirname "$0")"\nexport HOST=127.0.0.1 FLOW_DB_PATH=.data/flow.sqlite\necho "Open http://127.0.0.1:5180 in your browser. Keep this window open."\nexec ./runtime/node --experimental-strip-types server/index.ts\n')
+            launcher.write_text('#!/bin/sh\nset -eu\ncd "$(dirname "$0")"\nexport HOST=0.0.0.0 FLOW_DB_PATH=.data/flow.sqlite\necho "Open http://127.0.0.1:5180 in your browser. Keep this window open."\nexec ./runtime/node --experimental-strip-types server/index.ts\n')
             launcher.chmod(0o755)
         shutil.copy2(ROOT / "docs/portable.md", app / "README.md")
         assert (app / "dist/index.html").is_file()

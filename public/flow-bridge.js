@@ -292,6 +292,18 @@ Draw.loadPlugin(function(ui) {
     try { message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data; } catch { return; }
     if (!message || !String(message.action || '').startsWith('flow:')) return;
     try {
+      if(message.action==='flow:readonly'){
+        graph.setEnabled(false);
+        if(!document.getElementById('flow-viewer-style')){
+          const style=document.createElement('style');style.id='flow-viewer-style';
+          style.textContent='.geMenubar,.geToolbar,.geSidebarContainer,.geSidebarFooter,.geFormatContainer,.geHsplit,.geFooterContainer{display:none!important}.geDiagramContainer{left:0!important;top:0!important;right:0!important;bottom:0!important}';
+          document.head.appendChild(style);
+        }
+        const page=ui.getPageById(message.pageId);
+        if(page&&page!==ui.currentPage)ui.selectPage(page);
+        send({event:'flow:readonly',enabled:false});
+        return;
+      }
       if (message.action === 'flow:snapshot') {
         graph.stopEditing(false);
         snapshot(message.requestId);

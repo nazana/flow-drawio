@@ -46,6 +46,7 @@ async function launch(){
     await send('Browser.close').catch(()=>{});socket.close();
     await waitFor(async()=>{try{await fetch(endpoint+'/json/list',{signal:AbortSignal.timeout(1000)});return false;}catch{return true;}});
   }
+  await waitFor(()=>evaluate("location.origin.startsWith('http://127.0.0.1:') && document.readyState==='complete' && document.body.innerText.includes('Flow Studio')"));
   return {send,evaluate,close};
 }
 let browser=await launch();
