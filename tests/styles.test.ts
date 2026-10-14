@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {defaultStyles,validateStyles,styleValues,patchStyle,followsStyle,legendLabel} from '../public/flow-styles.js';
+import {inspectXml} from '../server/xml.ts';
+import {sampleXml} from '../src/sample.ts';
+test('표현 설정 검증·개별 모양 보존 판정·범례 escaping',()=>{
+  validateStyles(defaultStyles);
+  const values=styleValues(defaultStyles.EVENT),stamp=JSON.stringify(values);
+  const style=patchStyle('edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#ffffff;',values);
+  assert.match(style,/edgeStyle=orthogonalEdgeStyle/);assert.match(style,/rounded=1/);
+  assert.equal(followsStyle(style,stamp),true);
+  assert.equal(followsStyle(patchStyle(style,{strokeColor:'#ff0000'}),stamp),false);
+  assert.equal(followsStyle(style,''),false);
+  assert.throws(()=>validateStyles({...defaultStyles,TC:{...defaultStyles.TC,width:0}}));
+  assert.throws(()=>validateStyles({...defaultStyles,TC:{...defaultStyles.TC,color:'red;evil=1'}}));
+  assert.throws(()=>validateStyles({...defaultStyles,API:{...defaultStyles.API,end:'block'}}));
+  const label=legendLabel(['TC'],{...defaultStyles,TC:{...defaultStyles.TC,name:'<script> & TC'}},2);
+  assert.match(label,/&lt;script>/);assert.ok(!label.includes('<script>'));assert.match(label,/개별 모양 2개/);assert.ok(!label.includes('KAFKA'));
+  assert.throws(()=>inspectXml(sampleXml().replace('flowCatalog=', 'flowStyles="{}" flowCatalog=')));
+});
